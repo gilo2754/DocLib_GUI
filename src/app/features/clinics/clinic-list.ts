@@ -19,6 +19,7 @@ import {
   isSpeciality,
 } from '../../core/models';
 import { ClinicService } from '../../core/services/clinic.service';
+import { ConfirmService } from '../../shared/confirm-dialog';
 import { errorMessage } from '../../shared/http-error';
 import { ClinicStatePipe, SpecialityPipe } from '../../shared/labels.pipe';
 import { filterClinics } from './clinic-filter';
@@ -127,6 +128,7 @@ export class ClinicList implements OnInit {
   protected readonly auth = inject(AuthService);
   private readonly clinicService = inject(ClinicService);
   private readonly router = inject(Router);
+  private readonly confirmService = inject(ConfirmService);
 
   /** Query params (bound via withComponentInputBinding). */
   readonly speciality = input<string>();
@@ -169,8 +171,14 @@ export class ClinicList implements OnInit {
     });
   }
 
-  remove(clinic: Clinic): void {
-    if (!confirm(`Praxis „${clinic.clinic_name}“ wirklich löschen?`)) return;
+  async remove(clinic: Clinic): Promise<void> {
+    const confirmed = await this.confirmService.confirm({
+      title: 'Praxis löschen?',
+      message: `„${clinic.clinic_name}“ wird dauerhaft gelöscht.`,
+      confirmLabel: 'Löschen',
+      danger: true,
+    });
+    if (!confirmed) return;
     this.clinicService.delete(clinic.clinic_id).subscribe({
       next: () => {
         this.message.set({ text: `„${clinic.clinic_name}“ wurde gelöscht.`, error: false });

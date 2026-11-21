@@ -430,6 +430,39 @@ textarea.ng-invalid.ng-touched {
   flex-direction: column;
 }
 
+/* ---- confirm dialog ----------------------------------------------------- */
+.dialog {
+  width: min(440px, 100% - 2rem);
+  border: 0;
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  color: var(--c-text);
+  box-shadow: 0 20px 40px rgb(16 24 40 / 25%);
+}
+.dialog::backdrop {
+  background: rgb(16 24 40 / 45%);
+}
+.dialog h2 {
+  margin: 0 0 0.5rem;
+}
+.dialog p {
+  margin: 0 0 1.5rem;
+  color: var(--c-muted);
+}
+.dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.btn-danger-filled {
+  background: var(--c-danger);
+  color: #fff;
+}
+.btn-danger-filled:hover {
+  background: #a32020;
+}
+
 @media (max-width: 720px) {
   .search,
   .detail {

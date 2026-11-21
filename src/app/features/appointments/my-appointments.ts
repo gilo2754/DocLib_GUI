@@ -2,14 +2,16 @@ import {
   ChangeDetectionStrategy,
   Component,
   OnInit,
+  LOCALE_ID,
   computed,
   inject,
   signal,
 } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { DatePipe, formatDate } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Appointment } from '../../core/models';
 import { AppointmentService } from '../../core/services/appointment.service';
+import { ConfirmService } from '../../shared/confirm-dialog';
 import { errorMessage } from '../../shared/http-error';
 import { AppointmentStatusPipe } from '../../shared/labels.pipe';
 import { localNow } from './slots';
@@ -73,6 +75,8 @@ import { localNow } from './slots';
 })
 export class MyAppointments implements OnInit {
   private readonly appointmentService = inject(AppointmentService);
+  private readonly confirmService = inject(ConfirmService);
+  private readonly locale = inject(LOCALE_ID);
 
   protected readonly appointments = signal<Appointment[]>([]);
   protected readonly loading = signal(true);
@@ -99,8 +103,16 @@ export class MyAppointments implements OnInit {
     });
   }
 
-  cancel(appointment: Appointment): void {
-    if (!confirm('Termin wirklich stornieren?')) return;
+  async cancel(appointment: Appointment): Promise<void> {
+    const when = formatDate(appointment.startTime, "EEEE, dd.MM.yyyy 'um' HH:mm", this.locale);
+    const confirmed = await this.confirmService.confirm({
+      title: 'Termin stornieren?',
+      message: `Ihr Termin am ${when} Uhr bei ${appointment.clinic.clinic_name} wird storniert.`,
+      confirmLabel: 'Stornieren',
+      cancelLabel: 'Termin behalten',
+      danger: true,
+    });
+    if (!confirmed) return;
     this.appointmentService.cancel(appointment.appointment_id).subscribe({
       next: () =>
         this.appointments.update((list) =>

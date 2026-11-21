@@ -9,6 +9,14 @@ async function login(page: Page, returnTo = '') {
   await expect(page.getByTestId('current-user')).toHaveText('demo');
 }
 
+/** Answers the app's confirm dialog (not a native browser dialog). */
+async function answerConfirm(page: Page, button: string) {
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible();
+  await dialog.getByRole('button', { name: button }).click();
+  await expect(dialog).toBeHidden();
+}
+
 test.describe('DocLib demo', () => {
   test('search from the landing page filters clinics', async ({ page }) => {
     await page.goto('');
@@ -60,8 +68,19 @@ test.describe('DocLib demo', () => {
     const row = page.getByTestId('upcoming').locator('li', { hasText: 'Gastro Centro San Miguel' });
     await expect(row).toContainText('Angefragt');
 
-    page.once('dialog', (d) => d.accept());
+    // fail loudly if a native window.confirm() ever comes back
+    page.on('dialog', () => {
+      throw new Error('unexpected native browser dialog');
+    });
+
+    // "keep" leaves the appointment untouched
     await row.getByRole('button', { name: 'Stornieren' }).click();
+    await expect(page.getByRole('dialog')).toContainText('Gastro Centro San Miguel');
+    await answerConfirm(page, 'Termin behalten');
+    await expect(row).toContainText('Angefragt');
+
+    await row.getByRole('button', { name: 'Stornieren' }).click();
+    await answerConfirm(page, 'Stornieren');
     await expect(row).toContainText('Storniert');
   });
 
@@ -85,11 +104,11 @@ test.describe('DocLib demo', () => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('E2E Praxis Köln');
 
     await page.goto('clinics?q=E2E');
-    page.once('dialog', (d) => d.accept());
     await page
       .locator('.clinic-card', { hasText: 'E2E Praxis Köln' })
       .getByRole('button', { name: 'Löschen' })
       .click();
+    await answerConfirm(page, 'Löschen');
     await expect(page.getByRole('status')).toContainText('gelöscht');
     await expect(page.locator('.clinic-card')).toHaveCount(0);
   });
@@ -97,8 +116,8 @@ test.describe('DocLib demo', () => {
   test('clinics with appointments cannot be deleted (backend rule)', async ({ page }) => {
     await login(page);
     await page.goto('clinics?q=Escal');
-    page.once('dialog', (d) => d.accept());
     await page.locator('.clinic-card').first().getByRole('button', { name: 'Löschen' }).click();
+    await answerConfirm(page, 'Löschen');
     await expect(page.getByRole('status')).toContainText('offenen Terminen');
   });
 });
