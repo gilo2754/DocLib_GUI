@@ -35,6 +35,13 @@ export const routes: Routes = [
     loadComponent: () => import('./features/clinics/clinic-form').then((m) => m.ClinicForm),
   },
   {
+    path: 'appointments',
+    title: 'Meine Termine – DocLib',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/appointments/my-appointments').then((m) => m.MyAppointments),
+  },
+  {
     path: '**',
     title: 'Seite nicht gefunden – DocLib',
     loadComponent: () => import('./features/not-found/not-found').then((m) => m.NotFound),
