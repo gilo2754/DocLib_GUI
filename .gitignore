@@ -27,8 +27,9 @@
 # Angular cache
 .angular/
 
-# Local Claude Code settings
+# Local Claude Code settings and personal instructions
 .claude/settings.local.json
+.claude/CLAUDE.md
 
 # Playwright
 /test-results/
