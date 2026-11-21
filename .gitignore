@@ -30,5 +30,11 @@
 # Local Claude Code settings
 .claude/settings.local.json
 
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
 # Temporary files
 .tmp/
