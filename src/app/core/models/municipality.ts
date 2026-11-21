@@ -1,0 +1,22 @@
+/** Municipalities used by the location search (El Salvador). */
+export const MUNICIPALITIES = [
+  'Antiguo Cuscatlán',
+  'Apopa',
+  'Ahuachapán',
+  'Chalatenango',
+  'Chalchuapa',
+  'Cojutepeque',
+  'Ilopango',
+  'La Libertad',
+  'Mejicanos',
+  'Metapán',
+  'Nuevo Cuscatlán',
+  'San Miguel',
+  'San Salvador',
+  'Santa Ana',
+  'Santa Tecla',
+  'Soyapango',
+  'Sonsonate',
+  'Usulután',
+  'Zacatecoluca',
+] as const;
