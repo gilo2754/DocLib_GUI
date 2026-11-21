@@ -23,3 +23,12 @@
 *.swp
 *.bak
 .DS_Store
+
+# Angular cache
+.angular/
+
+# Local Claude Code settings
+.claude/settings.local.json
+
+# Temporary files
+.tmp/
